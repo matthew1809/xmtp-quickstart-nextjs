@@ -5,11 +5,11 @@ import {
   AttachmentCodec,
   RemoteAttachmentCodec,
   ContentTypeAttachment,
-  ContentTypeRemoteAttachment
+  ContentTypeRemoteAttachment,
 } from "xmtp-content-type-remote-attachment";
 import styles from "./Chat.module.css";
 
-function Chat({ client,messageHistory,  conversation }) {
+function Chat({ client, messageHistory, conversation }) {
   const address = useAddress();
   const { mutateAsync: upload } = useStorageUpload();
   const [isLoading, setIsLoading] = useState(false);
@@ -48,67 +48,70 @@ function Chat({ client,messageHistory,  conversation }) {
 
     const attachment = {
       filename: file.name,
-      mimeType: 'image/png',
-      data: imgArray
+      mimeType: "image/png",
+      data: imgArray,
     };
-    console.log(attachment)
+    console.log(attachment);
     await conversation.send(attachment, { contentType: ContentTypeAttachment });
   };
-  
+
   const handleLargeFile = async (file) => {
-      setIsLoading(true);
-  
-      const blob = new Blob([file], { type: "image/png" });
-      let imgArray = new Uint8Array(await blob.arrayBuffer());
-  
-      const attachment = {
-        filename: file.name,
-        mimeType: 'image/png',
-        data: imgArray
-      };
-  
-      const attachmentCodec = new AttachmentCodec();
-      const encryptedAttachment = await RemoteAttachmentCodec.encodeEncrypted(attachment, attachmentCodec);
-  
-      setLoadingText("Uploading to ThirdWeb Storage...");
-      const uploadUrl = await upload({
-        data: [new File([encryptedAttachment.payload.buffer], file.name)], // Convert Uint8Array back to File
-        options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
-      });
-      setLoadingText(uploadUrl[0]);
-      const remoteAttachment = {
-        url: uploadUrl[0],
-        contentDigest: encryptedAttachment.digest,
-        salt: encryptedAttachment.salt,
-        nonce: encryptedAttachment.nonce,
-        secret: encryptedAttachment.secret,
-        scheme: "https://",
-        filename: attachment.filename,
-        contentLength: encryptedAttachment.payload.byteLength,
-      };
-      setLoadingText("Sending...");
-      const message=await conversation.send(remoteAttachment, {
-        contentType: ContentTypeRemoteAttachment,
-        contentFallback: "a screenshot of over 1MB",
-      });
-      console.log('contentDigest',message.content.contentDigest)
-      
-      //This is just a decrpytion test
-      RemoteAttachmentCodec.load(message.content, client)
+    setIsLoading(true);
+
+    const blob = new Blob([file], { type: "image/png" });
+    let imgArray = new Uint8Array(await blob.arrayBuffer());
+
+    const attachment = {
+      filename: file.name,
+      mimeType: "image/png",
+      data: imgArray,
+    };
+
+    const attachmentCodec = new AttachmentCodec();
+    const encryptedAttachment = await RemoteAttachmentCodec.encodeEncrypted(
+      attachment,
+      attachmentCodec,
+    );
+
+    setLoadingText("Uploading to ThirdWeb Storage...");
+    const uploadUrl = await upload({
+      data: [new File([encryptedAttachment.payload.buffer], file.name)], // Convert Uint8Array back to File
+      options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+    });
+    setLoadingText(uploadUrl[0]);
+    const remoteAttachment = {
+      url: uploadUrl[0],
+      contentDigest: encryptedAttachment.digest,
+      salt: encryptedAttachment.salt,
+      nonce: encryptedAttachment.nonce,
+      secret: encryptedAttachment.secret,
+      scheme: "https://",
+      filename: attachment.filename,
+      contentLength: encryptedAttachment.payload.byteLength,
+    };
+    setLoadingText("Sending...");
+    const message = await conversation.send(remoteAttachment, {
+      contentType: ContentTypeRemoteAttachment,
+      contentFallback: "a screenshot of over 1MB",
+    });
+    console.log("contentDigest", message.content.contentDigest);
+
+    //This is just a decrpytion test
+    RemoteAttachmentCodec.load(message.content, client)
       .then((decryptedAttachment) => {
-        console.log('decryptedAttachment',decryptedAttachment)
-        
+        console.log("decryptedAttachment", decryptedAttachment);
+
         // Create a blob URL from the decrypted attachment data
-        const blob = new Blob([decryptedAttachment.data], { type: decryptedAttachment.mimeType });
+        const blob = new Blob([decryptedAttachment.data], {
+          type: decryptedAttachment.mimeType,
+        });
         const url = URL.createObjectURL(blob);
-        console.log(url)
+        console.log(url);
       })
       .catch((error) => {
-        console.error('Failed to load and decrypt remote attachment:', error);
+        console.error("Failed to load and decrypt remote attachment:", error);
       });
-      
   };
-  
 
   // Function to handle sending a text message
   const onSendMessage = async (value) => {
@@ -119,12 +122,11 @@ function Chat({ client,messageHistory,  conversation }) {
     const file = event.target.files[0];
     setInputValue(file.name);
     setImage(file);
-    
   };
   // Function to handle dropping a file onto the input field
   const handleFileDrop = (event) => {
     event.preventDefault();
-    console.log(event.dataTransfer.files)
+    console.log(event.dataTransfer.files);
     const file = event.dataTransfer.files[0];
     setInputValue(file.name);
     setImage(file);
@@ -146,25 +148,41 @@ function Chat({ client,messageHistory,  conversation }) {
 
   // Function to handle the click event on a message
   const handleClick = (message) => {
-    alert('Check the console for the message details');
+    alert("Check the console for the message details");
     console.log(message);
   };
 
   // Function to render a remote attachment URL as an image
   const remoteURL = (attachment) => {
-    return <img src={attachment.url} width={200} className="imageurl" alt={attachment.filename} />;
+    return (
+      <img
+        src={attachment.url}
+        width={200}
+        className="imageurl"
+        alt={attachment.filename}
+      />
+    );
   };
 
   // Function to render a local attachment as an image
   const objectURL = (attachment) => {
     const blob = new Blob([attachment.data], { type: attachment.mimeType });
-    return <img src={URL.createObjectURL(blob)} width={200} className="imageurl" alt={attachment.filename} />;
+    return (
+      <img
+        src={URL.createObjectURL(blob)}
+        width={200}
+        className="imageurl"
+        alt={attachment.filename}
+      />
+    );
   };
 
   // MessageList component to render the list of messages
   const MessageList = ({ messages }) => {
     // Filter messages by unique id
-    messages = messages.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
+    messages = messages.filter(
+      (v, i, a) => a.findIndex((t) => t.id === v.id) === i,
+    );
 
     return (
       <ul className="messageList">
@@ -172,9 +190,10 @@ function Chat({ client,messageHistory,  conversation }) {
           <li
             key={message.id}
             className="messageItem"
-            title="Click to log this message to the console"
-          >
-            <strong>{message.senderAddress === address ? 'You' : 'Bot'}:</strong>
+            title="Click to log this message to the console">
+            <strong>
+              {message.senderAddress === address ? "You" : "Bot"}:
+            </strong>
             {(() => {
               if (message.contentType.sameAs(ContentTypeRemoteAttachment)) {
                 // Handle ContentTypeRemoteAttachment
@@ -188,7 +207,9 @@ function Chat({ client,messageHistory,  conversation }) {
               }
             })()}
             <span className="date"> ({message.sent.toLocaleTimeString()})</span>
-            <span className="eyes" onClick={() => handleClick(message)}>👀</span>
+            <span className="eyes" onClick={() => handleClick(message)}>
+              👀
+            </span>
           </li>
         ))}
       </ul>
@@ -203,7 +224,10 @@ function Chat({ client,messageHistory,  conversation }) {
       <div className={styles.messageContainer}>
         <MessageList messages={messageHistory} />
       </div>
-      <div className={styles.inputContainer} onDrop={handleFileDrop} onDragOver={handleDragOver}>
+      <div
+        className={styles.inputContainer}
+        onDrop={handleFileDrop}
+        onDragOver={handleDragOver}>
         {isLoading ? (
           <div className={styles.inputField}>{loadingText}</div>
         ) : image ? (
@@ -219,9 +243,15 @@ function Chat({ client,messageHistory,  conversation }) {
           />
         )}
         <button className={styles.sendButton} onClick={triggerFileInput}>
-            📤
+          📤
         </button>
-        <input id="image-upload" type="file" accept="image/*" onChange={handleFileUpload} style={{ display: "none" }} />
+        <input
+          id="image-upload"
+          type="file"
+          accept="image/*"
+          onChange={handleFileUpload}
+          style={{ display: "none" }}
+        />
         <button className={styles.sendButton} onClick={handleSend}>
           &#128073;
         </button>
@@ -231,4 +261,3 @@ function Chat({ client,messageHistory,  conversation }) {
 }
 
 export default Chat;
-
