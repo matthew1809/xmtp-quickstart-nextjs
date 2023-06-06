@@ -1,10 +1,37 @@
-### Step 0: Install dependencies
 
-```bash
-npm install @xmtp/js
+
+# Quickstart App
+
+XMTP (Extensible Message Transport Protocol) is an open protocol and network for secure and private web3 messaging. For example, you can build an app with XMTP to send messages between blockchain accounts, including chat/DMs, alerts, announcements, and more.
+
+### Demo App
+
+This repository demonstrates the implementation of these concepts within a simple chat app.
+
+[GitHub repo](https://github.com/fabriguespe/xmtp-thirdweb-js)
+
+```tsx
+git clone git@github.com:fabriguespe/xmtp-thirdweb-js.git
+cd xmtp-thirdweb-js
+npm install
+npm run dev
 ```
 
-### Step 1: Configuring the client
+### Learning Objectives:
+
+- Setting up the ConnectWallet button
+- Signing in with XMTP
+- Loading a conversation
+- Sending a message
+
+
+### Install dependencies
+
+```bash
+npm install @xmtp/js @thirdweb-dev/react
+```
+
+### Configuring the client
 
 First we need to initialize XMTP client using as signer our wallet connection of choice.
 
@@ -21,7 +48,7 @@ export default function Index() {
 }
 ```
 
-### Step 2: Display connect with XMTP
+### Display connect with XMTP
 
 Now that we have the wrapper we can add a button that will sign our user in with XMTP.
 
@@ -39,9 +66,7 @@ Now that we have the wrapper we can add a button that will sign our user in with
 ```
 
 ```tsx
-const clientOptions = {
-  env: "production",
-};
+
 
 // Function to initialize the XMTP client
 const initXmtp = async function () {
@@ -60,7 +85,7 @@ const initXmtp = async function () {
 };
 ```
 
-### Step 3: Load conversation and messages
+### Load conversation and messages
 
 Now using our hooks we are going to use the state to listen whan XMTP is connected.
 
@@ -84,7 +109,7 @@ useEffect(() => {
 }, [conversation, client, messages]);
 ```
 
-### Step 4: Listen to conversations
+### Listen to conversations
 
 In your component initialize the hook to listen to conversations
 
@@ -101,7 +126,7 @@ const onMessage = useCallback((message) => {
 useStreamMessages(conversation, onMessage);
 ```
 
-### Step 5 (optional): Save keys
+### (optional): Save keys
 
 We are going to use a help file to storage our keys and save from re-signing to xmtp each time
 
@@ -132,6 +157,10 @@ export const wipeKeys = (walletAddress: string) => {
 Then in our main app we can use them for initiating the client
 
 ```tsx
+//options
+const clientOptions = {
+  env: "production",
+};
 //Initialize XMTP
 const initXmtpWithKeys = async () => {
   // create a client using keys returned from getKeys
