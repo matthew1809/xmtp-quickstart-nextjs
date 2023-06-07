@@ -1,4 +1,4 @@
-# Quickstart App
+# Developer Quickstart
 
 XMTP (Extensible Message Transport Protocol) is an open protocol and network for secure and private web3 messaging. For example, you can build an app with XMTP to send messages between blockchain accounts, including chat/DMs, alerts, announcements, and more.
 
