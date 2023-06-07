@@ -84,20 +84,23 @@ Later we are going to load our conversations and we are going to simulate starti
 
 ```tsx
 useEffect(() => {
-  async function loadConversation() {
-    if (await client?.canMessage(PEER_ADDRESS)) {
-      const convv = await startConversation(PEER_ADDRESS, "hi");
-      setConversation(convv);
-      const history = await convv.messages();
-      console.log("history", history.length);
-      setHistory(history);
-    } else {
-      console.log("cant message because is not on the network.");
-      //cant message because is not on the network.
-    }
+  if (isOnNetwork && convRef.current) {
+    // Function to stream new messages in the conversation
+    const streamMessages = async () => {
+      const newStream = await convRef.current.streamMessages();
+      for await (const msg of newStream) {
+        const exists = messages.find((m) => m.id === msg.id);
+        if (!exists) {
+          setMessages((prevMessages) => {
+            const msgsnew = [...prevMessages, msg];
+            return msgsnew;
+          });
+        }
+      }
+    };
+    streamMessages();
   }
-  if (!conversation && client) loadConversation();
-}, [conversation, client, messages]);
+}, [messages, isOnNetwork]);
 ```
 
 ### Listen to conversations
@@ -115,61 +118,4 @@ const onMessage = useCallback((message) => {
   });
 }, []);
 useStreamMessages(conversation, onMessage);
-```
-
-### (optional): Save keys
-
-We are going to use a help file to storage our keys and save from re-signing to xmtp each time
-
-```tsx
-const ENCODING = "binary";
-
-export const buildLocalStorageKey = (walletAddress: string) =>
-  walletAddress ? `xmtp:${"dev"}:keys:${walletAddress}` : "";
-
-export const loadKeys = (walletAddress: string): Uint8Array | null => {
-  const val = localStorage.getItem(buildLocalStorageKey(walletAddress));
-  return val ? Buffer.from(val, ENCODING) : null;
-};
-
-export const storeKeys = (walletAddress: string, keys: Uint8Array) => {
-  localStorage.setItem(
-    buildLocalStorageKey(walletAddress),
-    Buffer.from(keys).toString(ENCODING),
-  );
-};
-
-export const wipeKeys = (walletAddress: string) => {
-  // This will clear the conversation cache + the private keys
-  localStorage.removeItem(buildLocalStorageKey(walletAddress));
-};
-```
-
-Then in our main app we can use them for initiating the client
-
-```tsx
-//options
-const clientOptions = {
-  env: "production",
-};
-//Initialize XMTP
-const initXmtpWithKeys = async () => {
-  // create a client using keys returned from getKeys
-  //Use signer wallet from ThirdWeb hook `useSigner`
-  const address = await signer.getAddress();
-  let keys = loadKeys(address);
-  if (!keys) {
-    keys = await Client.getKeys(signer, {
-      ...clientOptions,
-      // we don't need to publish the contact here since it
-      // will happen when we create the client later
-      skipContactPublishing: true,
-      // we can skip persistence on the keystore for this short-lived
-      // instance
-      persistConversations: false,
-    });
-    storeKeys(address, keys);
-  }
-  await initialize({ keys, options: clientOptions, signer });
-};
 ```
