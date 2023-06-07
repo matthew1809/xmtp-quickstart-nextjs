@@ -1,5 +1,3 @@
-
-
 # Quickstart App
 
 XMTP (Extensible Message Transport Protocol) is an open protocol and network for secure and private web3 messaging. For example, you can build an app with XMTP to send messages between blockchain accounts, including chat/DMs, alerts, announcements, and more.
@@ -8,11 +6,11 @@ XMTP (Extensible Message Transport Protocol) is an open protocol and network for
 
 This repository demonstrates the implementation of these concepts within a simple chat app.
 
-[GitHub repo](https://github.com/fabriguespe/xmtp-thirdweb-js)
+[GitHub repo](https://github.com/fabriguespe/xmtp-quickstart-js)
 
 ```tsx
-git clone git@github.com:fabriguespe/xmtp-thirdweb-js.git
-cd xmtp-thirdweb-js
+git clone git@github.com:fabriguespe/xmtp-quickstart-js.git
+cd xmtp-quickstart-js
 npm install
 npm run dev
 ```
@@ -23,7 +21,6 @@ npm run dev
 - Signing in with XMTP
 - Loading a conversation
 - Sending a message
-
 
 ### Install dependencies
 
@@ -66,16 +63,10 @@ Now that we have the wrapper we can add a button that will sign our user in with
 ```
 
 ```tsx
-
-
 // Function to initialize the XMTP client
 const initXmtp = async function () {
   // Create the XMTP client
   const xmtp = await Client.create(signer, { env: "production" });
-  // Register the codecs. AttachmentCodec is for local attachments (<1MB)
-  xmtp.registerCodec(new AttachmentCodec());
-  //RemoteAttachmentCodec is for remote attachments (>1MB) using thirdweb storage
-  xmtp.registerCodec(new RemoteAttachmentCodec());
   //Create or load conversation with Gm bot
   newConversation(xmtp, PEER_ADDRESS);
   // Set the XMTP client in state for later use

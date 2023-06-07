@@ -4,10 +4,6 @@ import { Client } from "@xmtp/xmtp-js";
 
 import React, { useEffect, useState, useRef } from "react";
 import Chat from "./Chat";
-import {
-  AttachmentCodec,
-  RemoteAttachmentCodec,
-} from "xmtp-content-type-remote-attachment";
 import styles from "./Home.module.css";
 
 const PEER_ADDRESS = "0x937C0d4a6294cdfa575de17382c7076b579DC176";
@@ -24,7 +20,7 @@ export default function Home() {
   // Function to load the existing messages in a conversation
   const newConversation = async function (xmtp_client, addressTo) {
     //Creates a new conversation with the address
-    if (await client?.canMessage(PEER_ADDRESS)) {
+    if (await xmtp_client?.canMessage(PEER_ADDRESS)) {
       const conversation = await xmtp_client.conversations.newConversation(
         addressTo,
       );
@@ -42,10 +38,6 @@ export default function Home() {
   const initXmtp = async function () {
     // Create the XMTP client
     const xmtp = await Client.create(signer, { env: "production" });
-    // Register the codecs. AttachmentCodec is for local attachments (<1MB)
-    xmtp.registerCodec(new AttachmentCodec());
-    //RemoteAttachmentCodec is for remote attachments (>1MB) using thirdweb storage
-    xmtp.registerCodec(new RemoteAttachmentCodec());
     //Create or load conversation with Gm bot
     newConversation(xmtp, PEER_ADDRESS);
     // Set the XMTP client in state for later use
