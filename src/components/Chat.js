@@ -4,16 +4,12 @@ import { useAddress } from "@thirdweb-dev/react";
 
 function Chat({ client, messageHistory, conversation }) {
   const address = useAddress();
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingText, setLoadingText] = useState(false);
   const [inputValue, setInputValue] = useState("");
 
   // Function to handle sending a message
   const handleSend = async () => {
     if (inputValue) {
       await onSendMessage(inputValue);
-
-      setIsLoading(false);
       setInputValue("");
     }
   };
