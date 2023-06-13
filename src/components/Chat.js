@@ -38,7 +38,7 @@ function Chat({ client, messageHistory, conversation }) {
             </strong>
             <span>{message.content}</span>
             <span className="date"> ({message.sent.toLocaleTimeString()})</span>
-            <span className="eyes" onClick={() => handleClick(message)}>
+            <span className="eyes" onClick={() => console.log(message)}>
               👀
             </span>
           </li>
