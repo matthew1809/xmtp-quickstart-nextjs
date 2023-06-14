@@ -1,18 +1,33 @@
 # Developer Quickstart
 
-XMTP (Extensible Message Transport Protocol) is an open protocol and network for secure and private web3 messaging. For example, you can build an app with XMTP to send messages between blockchain accounts, including chat/DMs, alerts, announcements, and more.
+In this tutorial we are going to build a simple chat app using XMTP and NextJS. We are going to be chatting to a bot for simplicity. The bot is going to be a simple echo bot that will reply with the same message we send.
 
 ### Demo App
 
-This repository demonstrates the implementation of these concepts within a simple chat app.
+[<div class="div-header-github-link"></div> xmtp-quickstart-nextjs](https://github.com/fabriguespe/xmtp-quickstart-nextjs)
 
-[GitHub repo](https://github.com/fabriguespe/xmtp-quickstart-js)
-
-```tsx
-git clone git@github.com:fabriguespe/xmtp-quickstart-js.git
-cd xmtp-quickstart-js
+```bash
+git clone git@github.com:fabriguespe/xmtp-quickstart-nextjs.git
+cd xmtp-quickstart-nextjs
 npm install
 npm run dev
+```
+
+### Getting started
+
+The first step involves creating and configuring the Next.js application.
+
+To generate a new Next.js app, execute the following command in your terminal:
+
+```bash
+npx create-next-app xmtp-quickstart-nextjs
+
+✔ Would you like to use TypeScript with this project? Yes
+✔ Would you like to use ESLint with this project? Yes
+✔ Would you like to use Tailwind CSS with this project?  Yes
+✔ Would you like to use `src/` directory with this project? No
+✔ Use App Router (recommended)? Yes
+✔ Would you like to customize the default import alias? No
 ```
 
 ### Learning Objectives:
@@ -78,7 +93,7 @@ const initXmtp = async function () {
 
 ### Load conversation and messages
 
-Now using our hooks we are going to use the state to listen whan XMTP is connected.
+Now using our hooks we are going to use the state to listen when XMTP is connected.
 
 Later we are going to load our conversations and we are going to simulate starting a conversation with one of our bots
 
@@ -119,3 +134,21 @@ const onMessage = useCallback((message) => {
 }, []);
 useStreamMessages(conversation, onMessage);
 ```
+
+### Quickstarts 🏁
+
+- [NextJS](https://github.com/fabriguespe/xmtp-quickstart-nextjs)
+- [ReactJS](https://github.com/fabriguespe/xmtp-quickstart-reactjs)
+- [Dart](https://github.com/xmtp/xmtp-android)
+- [Kotlin](https://github.com/xmtp/xmtp-flutter)
+- [Swift](https://github.com/xmtp/xmtp-ios)
+- [React Native](https://github.com/fabriguespe/xmtp-react-native-quickstart)
+- [React Hooks](https://github.com/fabriguespe/xmtp-hooks-quickstart)
+- [Firebase Functions](https://github.com/fabriguespe/xmtp-firebase-functions)
+- [NodeJS](https://github.com/fabriguespe/xmtp-quickstart-node)
+
+#### Need to send a test message?
+
+Message this XMTP message bot to get an immediate automated reply:
+
+- `gm.xmtp.eth` (`0x937C0d4a6294cdfa575de17382c7076b579DC176`)
